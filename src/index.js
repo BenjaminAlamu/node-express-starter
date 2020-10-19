@@ -28,5 +28,5 @@ app.use(express.static(UPLOAD_PATH));
 console.log(port);
 
 const server = app.listen(port, () => {
-  console.log(`SLA-BE Server starts at port ${port}`);
+  console.log(`Node Starter Project starts at port ${port}`);
 });
