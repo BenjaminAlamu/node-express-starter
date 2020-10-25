@@ -1,4 +1,6 @@
 const express = require("express");
+const listAllRoutes = require("express-list-endpoints");
+const Table = require("cli-table");
 const app = express();
 
 require("dotenv").config();
@@ -10,6 +12,7 @@ const UPLOAD_PATH = path.join("./public/uploads");
 app.use(cors(""));
 
 require("./config/mongoose");
+const logger = require("./config/logger");
 
 var jsonParser = bodyParser.json({
   limit: 1024 * 1024 * 20,
@@ -25,7 +28,16 @@ app.use(jsonParser);
 app.use(urlencodedParser);
 app.use("/api/v1", require("./routes/index"));
 app.use(express.static(UPLOAD_PATH));
-console.log(port);
+
+let routesList = listAllRoutes(app);
+routesList = routesList.map((route) => {
+  const obj = {};
+  obj[route.path] = route.methods.join(" | ");
+  return obj;
+});
+const table = new Table();
+table.push({ Endpoints: "Methods" }, ...routesList);
+logger.info(table.toString());
 
 const server = app.listen(port, () => {
   console.log(`Node Starter Project starts at port ${port}`);
